@@ -30,7 +30,7 @@ jobs:
           BASE=${BASE#v}
           DATE=$(date -u +%Y%m%d)
           SHA=$(git rev-parse --short HEAD)
-          echo "version=${BASE}-prerelease.${DATE}.${SHA}" >> $GITHUB_OUTPUT
+          echo "version=${BASE}-prerelease+${DATE}.${SHA}" >> $GITHUB_OUTPUT
 
       - name: Restore dependencies
         run: dotnet restore
