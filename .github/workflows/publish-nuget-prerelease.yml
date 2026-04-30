@@ -1,0 +1,51 @@
+name: Publish Prerelease to NuGet
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+
+      - name: Build prerelease version string
+        id: version
+        run: |
+          BASE=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
+          BASE=${BASE#v}
+          DATE=$(date -u +%Y%m%d)
+          SHA=$(git rev-parse --short HEAD)
+          echo "version=${BASE}-prerelease+${DATE}.${SHA}" >> $GITHUB_OUTPUT
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Pack
+        run: dotnet pack Reor.Illustrations.OpenDoodles/Reor.Illustrations.OpenDoodles.csproj --configuration Release --no-build --output ./nupkg /p:Version=${{ steps.version.outputs.version }}
+
+      - name: NuGet login (OIDC → temp API key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: reor-jake
+
+      - name: Publish to NuGet
+        run: dotnet nuget push ./nupkg/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
