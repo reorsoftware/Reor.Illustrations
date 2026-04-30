@@ -10,8 +10,7 @@
         
         <Title>Reor Illustrations: OpenDoodles</Title>
         <Description>
-            This Reor Illustrations package makes Pablo Stanley's OpenDoodles available in the dotnet ecosystem. Each
-            doodle can be customised and are exposed with a sensible default for easy use.
+            This Reor Illustrations package makes Pablo Stanley's OpenDoodles available in the dotnet ecosystem. Each doodle can be customised and are exposed with a sensible default for easy use.
         </Description>
         
         <PackageId>Reor.Illustrations.OpenDoodles</PackageId>
